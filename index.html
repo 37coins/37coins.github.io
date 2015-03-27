@@ -83,6 +83,11 @@
                  */
 
                 window.swaggerUi.load();
+                
+                $.get( "apidocs/static.html", function( data ) {
+  $( "#static" ).html( data );
+ // alert( "Load was performed." );
+});
             });
         </script>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -253,68 +258,8 @@
                 </div>
                 <div class="span10 content">
 
-                    <h2>Introduction</h2>
-                    <div class="row-fluid">
-
-                        <div class="span7 documentationBox">
-                            <p>
-                                37Coins provides a simple and powerful REST API to integrate bitcoin payments into your business or application.
-                            </p>
-                        </div>
-                        <div class="span5 responseBox">
-                            <p>Api Endpoint</p>
-                            <pre class="highlight">http://chains-qa.37coins.io</pre>
-
-
-                        </div>
-                    </div>
-
-                    <!--block start-->
-                    <h2>Api Description</h2>
-                    <div class="row-fluid">
-
-                        <div class="span7 documentationBox">
-                            <p>
-                                37coins provides a simple and powerful REST API to integrate bitcoin payments into your business or application.
-                            </p>
-                        </div>
-                        <div class="span5 responseBox">
-                            <p>Api Endpoint</p>
-                            <pre class="highlight plaintext">http://chains-qa.37coins.io</pre>
-
-
-                        </div>
-                    </div>
-                    <!--block end-->
-
-
-                    <!--block start-->
-                    <h2>Authentication</h2>
-                    <div class="row-fluid">
-
-                        <div class="span7 documentationBox">
-                            <p>
-                                37coins provides a simple and powerful REST API to integrate bitcoin payments into your business or application.
-                            </p>
-                        </div>
-                        <div class="span5 responseBox">
-                        </div>
-                    </div>
-                    <!--block end-->
-
-                    <!--block start-->
-                    <h2>Change Log</h2>
-                    <div class="row-fluid">
-                        <h3>V1</h3>
-                        <div class="span7 documentationBox">
-                            <p>
-                                37coins provides a simple and powerful REST API to integrate bitcoin payments into your business or application.
-                            </p>
-                        </div>
-                        <div class="span5 responseBox">
-                        </div>
-                    </div>
-                    <!--block end-->
+                    <span id="static">
+                    </span>
 
 
                     <!--Endpoint block start-->
