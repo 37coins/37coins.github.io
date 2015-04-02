@@ -7,9 +7,6 @@
     "path" : "/keychains/{uuid}",
     "operations" : [ {
       "method" : "POST",
-      
-     
-      "notes":"test notes",
       "nickname" : "createWatchWallet",
       "type" : "Response",
       "parameters" : [ {

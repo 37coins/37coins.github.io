@@ -48,13 +48,13 @@
                             hljs.highlightBlock(e)
                         });
                         //tocify code
-                        var toc = $("#toc").tocify({
-                            selectors: "h2,h3,h4,h5",
-                            scrollTo:100
-                        }).data("toc-tocify");
-
-                        prettyPrint();
-                        $(".optionName").popover({trigger: "hover"});
+//                        var toc = $("#toc").tocify({
+//                            selectors: "h1,h2,h3",
+//                            scrollTo:100
+//                        }).data("toc-tocify");
+//
+//                        prettyPrint();
+//                        $(".optionName").popover({trigger: "hover"});
                     },
                     onFailure: function(data) {
                         log("Unable to Load SwaggerUI");
@@ -62,7 +62,13 @@
                     docExpansion: "none",
                     sorter: "alpha"
                 });
+$(document).on('loaded-static',function(){ console.log('triggered'); toc = $("#toc").tocify({
+                            selectors: "h1,h2,h3",
+                            scrollTo:100
+                        }).data("toc-tocify");
 
+                        prettyPrint();
+                        $(".optionName").popover({trigger: "hover"});});
                 function addApiKeyAuthorization() {
                     var key = $('#input_apiKey')[0].value;
                     log("key: " + key);
@@ -85,10 +91,10 @@
 
                 window.swaggerUi.load();
                 
-                $.get( "apidocs/static.html", function( data ) {
+             /*   $.get( "apidocs/static/static.html", function( data ) {
   $( "#static" ).html( data );
  // alert( "Load was performed." );
-});
+});*/
             });
         </script>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -123,10 +129,10 @@
                 padding-left: 10px;
                 font-size: 14px;
             }
-            h2{
+            h1,h2{
                 border-bottom: 1px solid #ccc;
             }
-            h2,h3,h4 {
+            h1,h2,h3,h4 {
                 text-transform: capitalize;
             }
             .headerDoc {
@@ -139,9 +145,23 @@
                     width: 100%;
                     margin: 0px 0px 20px 0px;
                 }
+                .dark-box{
+                width:0px !important;
+                }
+                .responseBox p{
+                color: black !important;
+                
+                margin-left:25px !important;
+            }
+            }
+            @media (min-width: 767px){
+                .responseBox p{
+                    margin-left: 15px;
+                    color: white !important;
+                }
             }
             .dark-box {
-
+width: 32%;
                 background-color: #18355C;
                 position: fixed;
                 right: 0;
@@ -158,10 +178,10 @@
                 // color: white;
                 margin-left:25px !important;
             }
-            .responseBox p{
-                margin-left: 15px;
-                color: white !important;
+            .responseBox > div{
+                margin-left:50px;
             }
+            
             /* line 641, /app/source/stylesheets/screen.css.scss */
             .content pre, .content blockquote {
                 background-color: transparent;
@@ -244,7 +264,7 @@
     <body class="swagger-section">
         <div id='header' style="">
             <div class="swagger-ui-wrap">
-                <a id="logo" href="https://37coins.com">37coins.io | API Documentation</a>
+                <a id="logo" href="https://37coins.com">37coins | Developers</a>
             </div>
         </div>
         <div class="headerFixed"></div>
@@ -255,7 +275,7 @@
                     <div id="toc">
                     </div><!--/.well -->
                 </div><!--/span-->
-                <div class="dark-box" style="width: 35%">
+                <div class="dark-box" style="">
                 </div>
                 <div class="span10 content">
 
@@ -264,11 +284,11 @@
 
 
                     <!--Endpoint block start-->
-                    <h2>Api Endpoints</h2>
+                    
 
                     <!--block end-->
 
-                    <div id="message-bar" class="swagger-ui-wrap">&nbsp;</div>
+                    <!--<div id="message-bar" class="swagger-ui-wrap">&nbsp;</div>-->
                     <div id="swagger-ui-container" class="swagger-ui-wrap row-fluid"></div>
                 </div><!--/span-->
 
