@@ -5,32 +5,41 @@
     <div class="span7 documentationBox">
         <p>
             <!--introduction goes here-->
-            37Coins provides a simple and powerful REST API to integrate bitcoin payments into your business or application.
+            <strong>Generic introduction for all the APIs (this section should be moved somewhere else):</strong><br/>
+            37Coins provides a set of simple and powerful REST APIs to provide support for client side hierarchical deterministic (HD) multisignature wallets.
+            It alleviates the need for direct blockchain connectivity and simplify design and requirements for wallets.
+            The APIs provide the means to create and query watch only wallets, create and publish transactions, receive notifications and/or storage private keys.
+            <br/><br/>
+            The APIs are:<br/>
+            - Chains: A REST+JSON API to create and manage watch only wallets, generate new addresses, create (but not sign) and publish transactions, send notifications and query wallet balance and transaction list.<br/>
+            - Oracle: A REST+JSON API to create HD keychains, store seeds and sign transactions in a HD multisignature/multi factor authentication scenario. Users receive a phone call and enter a PIN to validate their identity.<br/>
+            - Socket: A websocket API that publishes "Chains" and "Oracle" notifications for client wallets that can not provide a callback URL<br/>
+            <br/>
+            The 3 APIs can be used together or isolated.<br/>
+            A bitcoin exchange can use just "Oracle" to store a key in a 2 of 3 multisig environment. <br/>
+            A web wallet can use "Chains" to manage the waller backend; use 2 of 2 multisig and store one key in the browser and another key in "Oracle"; and use "Socket" to receive notifications. <br/>
+            <br/>
+            There are "Chains" and "Oracle" clients written in Java.<br/>
+            <br/><br/>
+            <strong>Specific introduction for Chains (this shuld stay here)</strong>:<br/>
+            "Chains" is a REST+JSON API to create and manage watch only wallets, generate new addresses, create (but not sign) and publish transactions, send notifications and query wallet balance and transaction list.
         </p>
-    </div>
-    <div class="span5 responseBox">
-        <p>Api Endpoint</p>
-        <pre class="highlight">http://chains-qa.37coins.io</pre>
-
-
     </div>
 </div>
 
 <!--block start-->
 <h2>Api Description</h2>
 <div class="row-fluid">
-
     <div class="span7 documentationBox">
         <p>
             <!--api description goes here-->
-            37coins provides a simple and powerful REST API to integrate bitcoin payments into your business or application.
         </p>
     </div>
     <div class="span5 responseBox">
-        <p>Api Endpoint</p>
-        <pre class="highlight plaintext">http://chains-qa.37coins.io</pre>
-
-
+        <p>QA Api Endpoint</p>
+        <pre class="highlight">http://chains-qa.37coins.io</pre>
+        <p>Prod Api Endpoint</p>
+        <pre class="highlight">https://chains.37coins.io</pre>
     </div>
 </div>
 <!--block end-->
@@ -43,7 +52,9 @@
 
     <div class="span7 documentationBox">
         <p>
-            37coins provides a simple and powerful REST API to integrate bitcoin payments into your business or application.
+            "Chains" expects some of the requests to be signed with a known RSA key. The client has to provide additional headers in the request:<br/>
+            - X-37Coins-Nonce : nonce used to generate the signature<br/>
+            - X-37Coins-Signature : a signature created by signing the word "token" + nonce string. Nonce is usually a timestamp. Example of string to be signed: token12569537329.<br/>
         </p>
     </div>
     <div class="span5 responseBox">
@@ -52,33 +63,6 @@
 <!--block end-->
 
 
-
-<!--block start-->
-<h2>Change Log</h2>
-<!--to start with another version just copy the div--> 
-<div class="row-fluid">
-   
-    <h3>V1</h3>
-    <div class="span7 documentationBox">
-        <p>
-            Version 1 description goes here
-        </p>
-    </div>
-    <div class="span5 responseBox">
-    </div>
-</div>
-
-<div class="row-fluid">
-   
-    <h3>V2</h3>
-    <div class="span7 documentationBox">
-        <p>
-            Version 2 description goes here
-        </p>
-    </div>
-    <div class="span5 responseBox">
-    </div>
-</div>
-<!--block end-->
+<!-- Section Change Log does not make any sense so far -->
 
 <h2>Api Endpoints</h2>
