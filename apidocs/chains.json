@@ -7,9 +7,6 @@
     "path" : "/keychains/{uuid}",
     "operations" : [ {
       "method" : "POST",
-      
-     
-      "notes":"test notes",
       "nickname" : "createWatchWallet",
       "type" : "Response",
       "parameters" : [ {
@@ -23,7 +20,7 @@
         "name" : "uuid",
         "required" : true
       } ],
-      "summary" : "Invoked when the client wants to create a new kiwi account",
+      "summary" : "Create a watch wallet",
       "produces" : [ "application/json" ]
     }, {
       "method" : "PUT",
@@ -40,7 +37,7 @@
         "name" : "uuid",
         "required" : true
       } ],
-      "summary" : "Invoked when the client wants to update an existing kiwi account",
+      "summary" : "Update a wallet's callback URL",
       "produces" : [ "application/json" ]
     }, {
       "method" : "GET",
@@ -52,7 +49,7 @@
         "name" : "uuid",
         "required" : true
       } ],
-      "summary" : "Invoked when the client wants a transaction to be signed",
+      "summary" : "Retrieve a watch wallet",
       "produces" : [ "application/json" ]
     }, {
       "method" : "DELETE",
@@ -63,8 +60,16 @@
         "paramType" : "path",
         "name" : "uuid",
         "required" : true
+      }, {
+        "type" : "string",
+        "paramType" : "header",
+        "name" : "X-37Coins-Signature"
+      }, {
+        "type" : "string",
+        "paramType" : "header",
+        "name" : "X-37Coins-Nonce"
       } ],
-      "summary" : "Invoked when the client wants to delete an existing kiwi account",
+      "summary" : "Delete a watch wallet",
       "produces" : [ "application/json" ]
     } ]
   }, {
@@ -79,7 +84,8 @@
         "name" : "uuid",
         "required" : true
       } ],
-      "summary" : "Invoked when the client wants to see address",
+      "summary" : "Retrieves a wallet bitcoin address",
+      "notes" : "The returned address has never received a transaction. This is useful to retrieve an address to give to another person that wants to send funds to the wallet.",
       "produces" : [ "application/json" ]
     } ]
   }, {
@@ -100,7 +106,6 @@
         "name" : "confirmations",
         "required" : true
       } ],
-      "summary" : "Invoked when the client wants so confirm transaction to be signed",
       "produces" : [ "application/json" ]
     } ]
   }, {
@@ -120,22 +125,7 @@
         "name" : "uuid",
         "required" : true
       } ],
-      "summary" : "Invoked when the client wants a create",
-      "produces" : [ "application/json" ]
-    } ]
-  }, {
-    "path" : "/keychains/{uuid}/newaddress",
-    "operations" : [ {
-      "method" : "GET",
-      "nickname" : "getNewAddress",
-      "type" : "Response",
-      "parameters" : [ {
-        "type" : "string",
-        "paramType" : "path",
-        "name" : "uuid",
-        "required" : true
-      } ],
-      "summary" : "Invoked when the client wants a new Address",
+      "summary" : "Create a Transaction",
       "produces" : [ "application/json" ]
     } ]
   }, {
@@ -155,7 +145,7 @@
         "name" : "uuid",
         "required" : true
       } ],
-      "summary" : "Invoked when the client wants a publish",
+      "summary" : "Publish a Transaction",
       "produces" : [ "application/json" ]
     } ]
   }, {
@@ -180,7 +170,7 @@
         "paramType" : "query",
         "name" : "size"
       } ],
-      "summary" : "Invoked when the client wants a transaction to be signed",
+      "summary" : "Retrieve a list of wallet's transactions",
       "produces" : [ "application/json" ]
     } ]
   } ],
@@ -247,42 +237,6 @@
         }
       }
     },
-    "TransactionResponse" : {
-      "id" : "TransactionResponse",
-      "properties" : {
-        "fee" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "time_utc" : {
-          "type" : "string"
-        },
-        "tx" : {
-          "type" : "string"
-        },
-        "time_utcAsDate" : {
-          "type" : "TransactionResponse"
-        },
-        "confirmations" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "vins" : {
-          "type" : "TransactionInputResponse[]"
-        },
-        "vouts" : {
-          "type" : "TransactionOutputResponse[]"
-        },
-        "block" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "netAmount" : {
-          "type" : "integer",
-          "format" : "int64"
-        }
-      }
-    },
     "PublishTransactionRequest" : {
       "id" : "PublishTransactionRequest",
       "properties" : {
@@ -339,10 +293,6 @@
     "String[]" : {
       "id" : "String[]",
       "properties" : {
-        "count" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "hash" : {
           "type" : "integer",
           "format" : "int32"
@@ -352,10 +302,6 @@
         },
         "value" : {
           "type" : "char[]"
-        },
-        "offset" : {
-          "type" : "integer",
-          "format" : "int32"
         }
       }
     },
@@ -431,9 +377,6 @@
         },
         "tx" : {
           "type" : "string"
-        },
-        "time_utcAsDate" : {
-          "type" : "TransactionResponse"
         },
         "confirmations" : {
           "type" : "integer",
