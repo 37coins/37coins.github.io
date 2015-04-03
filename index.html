@@ -91,10 +91,10 @@ $(document).on('loaded-static',function(){ console.log('triggered'); toc = $("#t
 
                 window.swaggerUi.load();
                 
-             /*   $.get( "apidocs/static/static.html", function( data ) {
-  $( "#static" ).html( data );
- // alert( "Load was performed." );
-});*/
+                $.get( "apidocs/static/static.html", function( data ) {
+                    $( "#static" ).html( data );
+                    // alert( "Load was performed." );
+                });
             });
         </script>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
