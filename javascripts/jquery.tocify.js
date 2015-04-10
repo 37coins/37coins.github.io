@@ -59,6 +59,10 @@
             // Used to determine if elements should be shown and hidden
             showAndHide: true,
 
+
+            //toggle on click, default false
+            toggleOnClick : false,
+            
             // **showEffect**: Accepts String: "none", "fadeIn", "show", or "slideDown"
             // Used to display any of the table of contents nested items
             showEffect: "slideDown",
@@ -539,6 +543,10 @@
 
                     self._triggerShow(elem);
 
+                }
+                 if(self.options.toggleOnClick) {
+                    var elem = $('li[data-unique="' + $(this).attr("data-unique") + '"]');
+                    $(this).next().toggle();
                 }
 
                 self._scrollTo($(this));

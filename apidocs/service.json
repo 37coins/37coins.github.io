@@ -5,10 +5,10 @@
   "apis" : [ {
     "path" : "chains.{format}",
    
-    "description": "HD wallet explorer."
+    "description": "HD wallet explorer"
   },{
     "path" : "oracle.{format}",
    
-    "description": "Signing Oracle."
+    "description": "Signing Oracle"
   } ]
 }

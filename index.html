@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>37coins.io API Documentation</title>
+        <!--<title>37coins.io API Documentation</title>-->
         <link href='css/typography.css' media='screen' rel='stylesheet' type='text/css'/>
         <link href='css/reset.css' media='screen' rel='stylesheet' type='text/css'/>
         <link href='css/screen.css' media='screen' rel='stylesheet' type='text/css'/>
@@ -62,13 +62,24 @@
                     docExpansion: "none",
                     sorter: "alpha"
                 });
-$(document).on('loaded-static',function(){ console.log('triggered'); toc = $("#toc").tocify({
+                window.resourceCounter = 0;
+                
+                $(document).on('loaded-static', function() {
+                    window.resourceCounter++;
+
+                    if (window.resourceCounter >= $('.resource').length) {
+                        console.log('triggered');
+                        toc = $("#toc").tocify({
                             selectors: "h1,h2,h3",
-                            scrollTo:100
+                            scrollTo: 100,
+                            toggleOnClick: true
+                                    // showAndHide : true
                         }).data("toc-tocify");
 
                         prettyPrint();
-                        $(".optionName").popover({trigger: "hover"});});
+                        $(".optionName").popover({trigger: "hover"});
+                    }
+                });
                 function addApiKeyAuthorization() {
                     var key = $('#input_apiKey')[0].value;
                     log("key: " + key);
@@ -90,9 +101,9 @@ $(document).on('loaded-static',function(){ console.log('triggered'); toc = $("#t
                  */
 
                 window.swaggerUi.load();
-                
-                $.get( "apidocs/static/static.html", function( data ) {
-                    $( "#static" ).html( data );
+
+                $.get("apidocs/static/static.html", function(data) {
+                    $("#static").html(data);
                     // alert( "Load was performed." );
                 });
             });
@@ -146,13 +157,13 @@ $(document).on('loaded-static',function(){ console.log('triggered'); toc = $("#t
                     margin: 0px 0px 20px 0px;
                 }
                 .dark-box{
-                width:0px !important;
+                    width:0px !important;
                 }
                 .responseBox p{
-                color: black !important;
-                
-                margin-left:25px !important;
-            }
+                    color: black !important;
+
+                    margin-left:25px !important;
+                }
             }
             @media (min-width: 767px){
                 .responseBox p{
@@ -161,7 +172,7 @@ $(document).on('loaded-static',function(){ console.log('triggered'); toc = $("#t
                 }
             }
             .dark-box {
-width: 32%;
+                width: 32%;
                 background-color: #18355C;
                 position: fixed;
                 right: 0;
@@ -181,7 +192,7 @@ width: 32%;
             .responseBox > div{
                 margin-left:50px;
             }
-            
+
             /* line 641, /app/source/stylesheets/screen.css.scss */
             .content pre, .content blockquote {
                 background-color: transparent;
@@ -284,7 +295,7 @@ width: 32%;
 
 
                     <!--Endpoint block start-->
-                    
+
 
                     <!--block end-->
 
