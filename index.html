@@ -72,7 +72,9 @@
                         toc = $("#toc").tocify({
                             selectors: "h1,h2,h3",
                             scrollTo: 100,
-                            toggleOnClick: true
+                            toggleOnClick: true,
+                            smoothScroll : true,
+                            highlightOnScroll : false
                                     // showAndHide : true
                         }).data("toc-tocify");
 
@@ -136,6 +138,11 @@
                 font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
                 /*padding-top: 20px;*/
             }
+            .swagger-section #header{
+                width: 100% !important;
+                margin-left: 0px !important;
+                z-index: 1000;
+            }
             p {
                 padding-left: 10px;
                 font-size: 14px;
@@ -149,12 +156,25 @@
             .headerDoc {
                 color: #005580;
             }
+ @media (min-width: 768px) {
+                
+           .dark-box{
+                    width:30% !important;
+                }
+                .responseBox p{
+                    color: black !important;
 
+                    margin-left:25px !important;
+                }
+               
+            }
             @media (max-width: 767px) {
+                body{padding-left: 0px;}
                 #toc {
                     position: relative;
                     width: 100%;
                     margin: 0px 0px 20px 0px;
+                    
                 }
                 .dark-box{
                     width:0px !important;
@@ -164,7 +184,11 @@
 
                     margin-left:25px !important;
                 }
+               
             }
+            
+            .color-white p{color: white !important;}
+             .margin-left-10{margin-left: 10px;}
             @media (min-width: 767px){
                 .responseBox p{
                     margin-left: 15px;
