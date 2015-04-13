@@ -544,12 +544,17 @@
                     self._triggerShow(elem);
 
                 }
-                 if(self.options.toggleOnClick) {
-                    var elem = $('li[data-unique="' + $(this).attr("data-unique") + '"]');
-                    $(this).next().toggle();
-                }
+                 
 
                 self._scrollTo($(this));
+                if(self.options.toggleOnClick) {
+                    var elem = $('li[data-unique="' + $(this).attr("data-unique") + '"]');
+                    //var s = this;
+                    $(this).next('.tocify-subheader').toggle();
+                                       
+                   // toggle(function(){console.log('--completed');});
+                    console.log("clicked2--:",$(this).next('.tocify-subheader').is(':hidden'));
+                }
 
             });
 
