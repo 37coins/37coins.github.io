@@ -1,7 +1,7 @@
 {
   "swaggerVersion" : "1.2",
   "apiVersion" : "1",
- "basePath":"/37coins.github.io/apidocs/",
+ "basePath":"/apidocs/",
   "apis" : [ {
     "path" : "chains.{format}",
    
