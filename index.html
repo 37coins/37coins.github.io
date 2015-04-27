@@ -72,7 +72,7 @@
                     if (window.resourceCounter >= $('.resource').length) {
                         console.log('triggered');
                         toc = $("#toc").tocify({
-                            selectors: "h1,h2,h3",
+                            selectors: "h1,h2,h3,h4",
                             scrollTo: 100,
                             toggleOnClick: true,
                             smoothScroll : true,
@@ -108,12 +108,17 @@
                  addApiKeyAuthorization();
                  */
 
-                window.swaggerUi.load();
+               
 
                 $.get("apidocs/static/static.html", function(data) {
                     $("#static").html(data);
                     // alert( "Load was performed." );
                 });
+                $.get("apidocs/static/webWidget.html", function(data) {
+                    $("#web-widget").html(data);
+                    // alert( "Load was performed." );
+                }); 
+                window.swaggerUi.load();
             });
         </script>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -171,6 +176,7 @@
 
                     <!--<div id="message-bar" class="swagger-ui-wrap">&nbsp;</div>-->
                     <div id="swagger-ui-container" class="swagger-ui-wrap row-fluid"></div>
+                    <span id="web-widget"></span>
                 </div><!--/span-->
 
             </div><!--/row-->
