@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <meta charset="utf-8">
         <title>37coins.io API Documentation</title>
         <link rel="icon" type="image/png" href="images/favicon16.gif">
         <link rel="shortcut icon" href="images/faveicon32.png">
@@ -30,63 +31,61 @@
                 if (url && url.length > 1) {
                     url = decodeURIComponent(url[1]);
                 } else {
-                    url = "apidocs/service.json";
+                    url = [
+                        "apidocs/swagger.json",
+                    ];
                 }
-                window.swaggerUi = new SwaggerUi({
-                    url: url,
-                    dom_id: "swagger-ui-container",
-                    supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch'],
-                    onComplete: function(swaggerApi, swaggerUi) {
-                        if (typeof initOAuth == "function") {
-                            /*
-                             initOAuth({
-                             clientId: "your-client-id",
-                             realm: "your-realms",
-                             appName: "your-app-name"
-                             });
-                             */
+                if (url) {
+                    for (var index in url) {
+                        if (!$('#swagger-ui-container-' + index).length) {
+                            $('#swagger').append('<div id="swagger-ui-container-' + index + '" class="swagger-ui-wrap row-fluid"></div>');
                         }
-                        $('pre code').each(function(i, e) {
-                            hljs.highlightBlock(e)
-                        });
-                        //tocify code
-//                        var toc = $("#toc").tocify({
-//                            selectors: "h1,h2,h3",
-//                            scrollTo:100
-//                        }).data("toc-tocify");
-//
-//                        prettyPrint();
-//                        $(".optionName").popover({trigger: "hover"});
-                    },
-                    onFailure: function(data) {
-                        log("Unable to Load SwaggerUI");
-                    },
-                    docExpansion: "none",
-                    sorter: "alpha"
-                });
-                window.resourceCounter = 0;
-                
+                        window.swaggerUi = new SwaggerUi({
+                            url: url[index],
+                            dom_id: "swagger-ui-container-" + index,
+                            supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch'],
+                            onComplete: function(swaggerApi, swaggerUi) {
+                                if (typeof initOAuth == "function") {
+                                    /*
+                                     initOAuth({
+                                     clientId: "your-client-id",
+                                     realm: "your-realms",
+                                     appName: "your-app-name"
+                                     });
+                                     */
+                                }
+                                $('pre code').each(function(i, e) {
+                                    hljs.highlightBlock(e)
+                                });
+                            },
+                            onFailure: function(data) {
+                                log("Unable to Load SwaggerUI");
+                            },
+                            docExpansion: "none",
+                            sorter: "alpha"
+                        }).load();
+                    }
+                }
+                window.resourceCounter = 1;
                 $(document).on('loaded-static', function() {
-                    window.resourceCounter++;
-
-                    if (window.resourceCounter >= $('.resource').length) {
+                    if (window.resourceCounter >= url.length && window.resourceCounter >= $('.resource').length) {
                         console.log('triggered');
                         toc = $("#toc").tocify({
                             selectors: "h1,h2,h3,h4",
                             scrollTo: 100,
                             toggleOnClick: true,
-                            smoothScroll : true,
-                            highlightOnScroll : true,
-                            extendPageOffset : 300,
-                            showAndHide : false,//this is needed for toggleling the dropdown on sigle click
-                           // showEffect:"none",
-                           // showAndHideOnScroll : false
+                            smoothScroll: true,
+                            highlightOnScroll: true,
+                            extendPageOffset: 300,
+                            showAndHide: false, //this is needed for toggleling the dropdown on sigle click
+                            // showEffect:"none",
+                            // showAndHideOnScroll : false
                         }).data("toc-tocify");
-
                         prettyPrint();
                         $(".optionName").popover({trigger: "hover"});
-                       // $('.tocify-header .tocify-item').on('click',function(){$(this).next('.tocify-subheader').toggle();});
+                        // $('.tocify-header .tocify-item').on('click',function(){$(this).next('.tocify-subheader').toggle();});
                     }
+                    window.resourceCounter++;
                 });
                 function addApiKeyAuthorization() {
                     var key = $('#input_apiKey')[0].value;
@@ -100,7 +99,6 @@
                 $('#input_apiKey').change(function() {
                     addApiKeyAuthorization();
                 });
-
                 // if you have an apiKey you would like to pre-populate on the page for demonstration purposes...
                 /*
                  var apiKey = "myApiKeyXXXX123456789";
@@ -108,7 +106,7 @@
                  addApiKeyAuthorization();
                  */
 
-               
+
 
                 $.get("apidocs/static/static.html", function(data) {
                     $("#static").html(data);
@@ -117,10 +115,9 @@
                 $.get("apidocs/static/webWidget.html", function(data) {
                     $("#web-widget").html(data);
                     // alert( "Load was performed." );
-                }); 
-                window.swaggerUi.load();
-            });
-        </script>
+                });
+                //window.swaggerUi.load();
+            });</script>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content="">
         <meta name="author" content="">
@@ -164,7 +161,7 @@
                 <div class="dark-box" style="">
                 </div>
                 <div class="span10 content">
-                   
+
                     <span id="static">
                     </span>
 
@@ -175,7 +172,8 @@
                     <!--block end-->
 
                     <!--<div id="message-bar" class="swagger-ui-wrap">&nbsp;</div>-->
-                    <div id="swagger-ui-container" class="swagger-ui-wrap row-fluid"></div>
+                    <div id="swagger"></div>
+
                     <span id="web-widget"></span>
                 </div><!--/span-->
 
@@ -191,18 +189,5 @@
         <script src="javascripts/bootstrap.js"></script>
         <script src="javascripts/jquery.tocify.js"></script>
         <script src="javascripts/prettify.js"></script>
-        <script>
-            $(function() {
-
-                setTimeout(function() {
-//                    var toc = $("#toc").tocify({
-//                        selectors: "h2,h3,h4,h5"
-//                    }).data("toc-tocify");
-//
-//                    prettyPrint();
-//                    $(".optionName").popover({trigger: "hover"});
-                }, 2000);
-            });
-        </script>
     </body>
 </html>

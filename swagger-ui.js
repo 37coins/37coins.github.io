@@ -4,6 +4,200 @@
  * @link http://swagger.io
  * @license Apache 2.0
  */
+var SwaggerUi,
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
+
+SwaggerUi = (function(superClass) {
+  extend(SwaggerUi, superClass);
+
+  function SwaggerUi() {
+    return SwaggerUi.__super__.constructor.apply(this, arguments);
+  }
+
+  SwaggerUi.prototype.dom_id = "swagger_ui";
+
+  SwaggerUi.prototype.options = null;
+
+  SwaggerUi.prototype.api = null;
+
+  SwaggerUi.prototype.headerView = null;
+
+  SwaggerUi.prototype.mainView = null;
+
+  SwaggerUi.prototype.initialize = function(options) {
+    if (options == null) {
+      options = {};
+    }
+    if (options.dom_id != null) {
+      this.dom_id = options.dom_id;
+      delete options.dom_id;
+    }
+    if (options.supportedSubmitMethods == null) {
+      options.supportedSubmitMethods = ['get', 'put', 'post', 'delete', 'head', 'options', 'patch'];
+    }
+    if ($('#' + this.dom_id) == null) {
+      $('body').append('<div id="' + this.dom_id + '"></div>');
+    }
+    this.options = options;
+    this.options.success = (function(_this) {
+      return function() {
+        return _this.render();
+      };
+    })(this);
+    this.options.progress = (function(_this) {
+      return function(d) {
+        return _this.showMessage(d);
+      };
+    })(this);
+    this.options.failure = (function(_this) {
+      return function(d) {
+        return _this.onLoadFailure(d);
+      };
+    })(this);
+    this.headerView = new HeaderView({
+      el: $('#header')
+    });
+    return this.headerView.on('update-swagger-ui', (function(_this) {
+      return function(data) {
+        return _this.updateSwaggerUi(data);
+      };
+    })(this));
+  };
+
+  SwaggerUi.prototype.setOption = function(option, value) {
+    return this.options[option] = value;
+  };
+
+  SwaggerUi.prototype.getOption = function(option) {
+    return this.options[option];
+  };
+
+  SwaggerUi.prototype.updateSwaggerUi = function(data) {
+    this.options.url = data.url;
+    return this.load();
+  };
+
+  SwaggerUi.prototype.load = function() {
+    var ref, url;
+    if ((ref = this.mainView) != null) {
+      ref.clear();
+    }
+    url = this.options.url;
+    if (url && url.indexOf("http") !== 0) {
+      url = this.buildUrl(window.location.href.toString(), url);
+    }
+    this.options.url = url;
+    this.headerView.update(url);
+    return this.api = new SwaggerClient(this.options);
+  };
+
+  SwaggerUi.prototype.collapseAll = function() {
+    return Docs.collapseEndpointListForResource('');
+  };
+
+  SwaggerUi.prototype.listAll = function() {
+    return Docs.collapseOperationsForResource('');
+  };
+
+  SwaggerUi.prototype.expandAll = function() {
+    return Docs.expandOperationsForResource('');
+  };
+
+  SwaggerUi.prototype.render = function() {
+    this.showMessage('Finished Loading Resource Information. Rendering Swagger UI...');
+    this.mainView = new MainView({
+      model: this.api,
+      el: $('#' + this.dom_id),
+      swaggerOptions: this.options
+    }).render();
+    this.showMessage();
+    switch (this.options.docExpansion) {
+      case "full":
+        this.expandAll();
+        break;
+      case "list":
+        this.listAll();
+    }
+    this.renderGFM();
+    if (this.options.onComplete) {
+      this.options.onComplete(this.api, this);
+    }
+    return setTimeout((function(_this) {
+      return function() {
+        return Docs.shebang();
+      };
+    })(this), 100);
+  };
+
+  SwaggerUi.prototype.buildUrl = function(base, url) {
+    var endOfPath, parts;
+    if (url.indexOf("/") === 0) {
+      parts = base.split("/");
+      base = parts[0] + "//" + parts[2];
+      return base + url;
+    } else {
+      endOfPath = base.length;
+      if (base.indexOf("?") > -1) {
+        endOfPath = Math.min(endOfPath, base.indexOf("?"));
+      }
+      if (base.indexOf("#") > -1) {
+        endOfPath = Math.min(endOfPath, base.indexOf("#"));
+      }
+      base = base.substring(0, endOfPath);
+      if (base.indexOf("/", base.length - 1) !== -1) {
+        return base + url;
+      }
+      return base + "/" + url;
+    }
+  };
+
+  SwaggerUi.prototype.showMessage = function(data) {
+    if (data == null) {
+      data = '';
+    }
+    $('#message-bar').removeClass('message-fail');
+    $('#message-bar').addClass('message-success');
+    return $('#message-bar').html(data);
+  };
+
+  SwaggerUi.prototype.onLoadFailure = function(data) {
+    var val;
+    if (data == null) {
+      data = '';
+    }
+    $('#message-bar').removeClass('message-success');
+    $('#message-bar').addClass('message-fail');
+    val = $('#message-bar').html(data);
+    if (this.options.onFailure != null) {
+      this.options.onFailure(data);
+    }
+    return val;
+  };
+
+  SwaggerUi.prototype.renderGFM = function(data) {
+    if (data == null) {
+      data = '';
+    }
+    return $('.markdown').each(function(index) {
+      return $(this).html(marked($(this).html()));
+    });
+  };
+
+  return SwaggerUi;
+
+})(Backbone.Router);
+
+window.SwaggerUi = SwaggerUi;
+
+this["Handlebars"] = this["Handlebars"] || {};
+this["Handlebars"]["templates"] = this["Handlebars"]["templates"] || {};
+this["Handlebars"]["templates"]["apikey_button_view"] = Handlebars.template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
+  var helper, functionType="function", helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
+  return "<!--div class='auth_button' id='apikey_button'><img class='auth_icon' alt='apply api key' src='images/apikey.jpeg'></div-->\n<div class='auth_container' id='apikey_container'>\n  <div class='key_input_container'>\n    <div class='auth_label'>"
+    + escapeExpression(((helper = (helper = helpers.keyName || (depth0 != null ? depth0.keyName : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"keyName","hash":{},"data":data}) : helper)))
+    + "</div>\n    <input placeholder=\"api_key\" class=\"auth_input\" id=\"input_apiKey_entry\" name=\"apiKey\" type=\"text\"/>\n    <div class='auth_submit'><a class='auth_submit_button' id=\"apply_api_key\" href=\"#\">apply</a></div>\n  </div>\n</div>\n\n";
+},"useData":true});
 $(function() {
 
 	// Helper function for vertically aligning DOM elements
@@ -199,200 +393,6 @@ var Docs = {
 	}
 };
 
-var SwaggerUi,
-  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-  hasProp = {}.hasOwnProperty;
-
-SwaggerUi = (function(superClass) {
-  extend(SwaggerUi, superClass);
-
-  function SwaggerUi() {
-    return SwaggerUi.__super__.constructor.apply(this, arguments);
-  }
-
-  SwaggerUi.prototype.dom_id = "swagger_ui";
-
-  SwaggerUi.prototype.options = null;
-
-  SwaggerUi.prototype.api = null;
-
-  SwaggerUi.prototype.headerView = null;
-
-  SwaggerUi.prototype.mainView = null;
-
-  SwaggerUi.prototype.initialize = function(options) {
-    if (options == null) {
-      options = {};
-    }
-    if (options.dom_id != null) {
-      this.dom_id = options.dom_id;
-      delete options.dom_id;
-    }
-    if (options.supportedSubmitMethods == null) {
-      options.supportedSubmitMethods = ['get', 'put', 'post', 'delete', 'head', 'options', 'patch'];
-    }
-    if ($('#' + this.dom_id) == null) {
-      $('body').append('<div id="' + this.dom_id + '"></div>');
-    }
-    this.options = options;
-    this.options.success = (function(_this) {
-      return function() {
-        return _this.render();
-      };
-    })(this);
-    this.options.progress = (function(_this) {
-      return function(d) {
-        return _this.showMessage(d);
-      };
-    })(this);
-    this.options.failure = (function(_this) {
-      return function(d) {
-        return _this.onLoadFailure(d);
-      };
-    })(this);
-    this.headerView = new HeaderView({
-      el: $('#header')
-    });
-    return this.headerView.on('update-swagger-ui', (function(_this) {
-      return function(data) {
-        return _this.updateSwaggerUi(data);
-      };
-    })(this));
-  };
-
-  SwaggerUi.prototype.setOption = function(option, value) {
-    return this.options[option] = value;
-  };
-
-  SwaggerUi.prototype.getOption = function(option) {
-    return this.options[option];
-  };
-
-  SwaggerUi.prototype.updateSwaggerUi = function(data) {
-    this.options.url = data.url;
-    return this.load();
-  };
-
-  SwaggerUi.prototype.load = function() {
-    var ref, url;
-    if ((ref = this.mainView) != null) {
-      ref.clear();
-    }
-    url = this.options.url;
-    if (url && url.indexOf("http") !== 0) {
-      url = this.buildUrl(window.location.href.toString(), url);
-    }
-    this.options.url = url;
-    this.headerView.update(url);
-    return this.api = new SwaggerClient(this.options);
-  };
-
-  SwaggerUi.prototype.collapseAll = function() {
-    return Docs.collapseEndpointListForResource('');
-  };
-
-  SwaggerUi.prototype.listAll = function() {
-    return Docs.collapseOperationsForResource('');
-  };
-
-  SwaggerUi.prototype.expandAll = function() {
-    return Docs.expandOperationsForResource('');
-  };
-
-  SwaggerUi.prototype.render = function() {
-    this.showMessage('Finished Loading Resource Information. Rendering Swagger UI...');
-    this.mainView = new MainView({
-      model: this.api,
-      el: $('#' + this.dom_id),
-      swaggerOptions: this.options
-    }).render();
-    this.showMessage();
-    switch (this.options.docExpansion) {
-      case "full":
-        this.expandAll();
-        break;
-      case "list":
-        this.listAll();
-    }
-    this.renderGFM();
-    if (this.options.onComplete) {
-      this.options.onComplete(this.api, this);
-    }
-    return setTimeout((function(_this) {
-      return function() {
-        return Docs.shebang();
-      };
-    })(this), 100);
-  };
-
-  SwaggerUi.prototype.buildUrl = function(base, url) {
-    var endOfPath, parts;
-    if (url.indexOf("/") === 0) {
-      parts = base.split("/");
-      base = parts[0] + "//" + parts[2];
-      return base + url;
-    } else {
-      endOfPath = base.length;
-      if (base.indexOf("?") > -1) {
-        endOfPath = Math.min(endOfPath, base.indexOf("?"));
-      }
-      if (base.indexOf("#") > -1) {
-        endOfPath = Math.min(endOfPath, base.indexOf("#"));
-      }
-      base = base.substring(0, endOfPath);
-      if (base.indexOf("/", base.length - 1) !== -1) {
-        return base + url;
-      }
-      return base + "/" + url;
-    }
-  };
-
-  SwaggerUi.prototype.showMessage = function(data) {
-    if (data == null) {
-      data = '';
-    }
-    $('#message-bar').removeClass('message-fail');
-    $('#message-bar').addClass('message-success');
-    return $('#message-bar').html(data);
-  };
-
-  SwaggerUi.prototype.onLoadFailure = function(data) {
-    var val;
-    if (data == null) {
-      data = '';
-    }
-    $('#message-bar').removeClass('message-success');
-    $('#message-bar').addClass('message-fail');
-    val = $('#message-bar').html(data);
-    if (this.options.onFailure != null) {
-      this.options.onFailure(data);
-    }
-    return val;
-  };
-
-  SwaggerUi.prototype.renderGFM = function(data) {
-    if (data == null) {
-      data = '';
-    }
-    return $('.markdown').each(function(index) {
-      return $(this).html(marked($(this).html()));
-    });
-  };
-
-  return SwaggerUi;
-
-})(Backbone.Router);
-
-window.SwaggerUi = SwaggerUi;
-
-this["Handlebars"] = this["Handlebars"] || {};
-this["Handlebars"]["templates"] = this["Handlebars"]["templates"] || {};
-this["Handlebars"]["templates"]["apikey_button_view"] = Handlebars.template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
-  var helper, functionType="function", helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
-  return "<!--div class='auth_button' id='apikey_button'><img class='auth_icon' alt='apply api key' src='images/apikey.jpeg'></div-->\n<div class='auth_container' id='apikey_container'>\n  <div class='key_input_container'>\n    <div class='auth_label'>"
-    + escapeExpression(((helper = (helper = helpers.keyName || (depth0 != null ? depth0.keyName : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"keyName","hash":{},"data":data}) : helper)))
-    + "</div>\n    <input placeholder=\"api_key\" class=\"auth_input\" id=\"input_apiKey_entry\" name=\"apiKey\" type=\"text\"/>\n    <div class='auth_submit'><a class='auth_submit_button' id=\"apply_api_key\" href=\"#\">apply</a></div>\n  </div>\n</div>\n\n";
-},"useData":true});
 Handlebars.registerHelper('sanitize', function(html) {
   html = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
   return new Handlebars.SafeString(html);
@@ -606,24 +606,13 @@ this["Handlebars"]["templates"]["operation"] = Handlebars.template({"1":function
   if (stack1 != null) { buffer += stack1; }
   stack1 = helpers['if'].call(depth0, (depth0 != null ? depth0.responseMessages : depth0), {"name":"if","hash":{},"fn":this.program(7, data),"inverse":this.noop,"data":data});
   if (stack1 != null) { buffer += stack1; }
-  buffer += "    </div>\n    <div class=\"span5 responseBox\">\n\n        <div class=\"signature-container\">\n                     \n";
+  buffer += "    </div>\n    <div class=\"span5 responseBox\">\n\n\n        <div class=\"signature-container\">\n                    <div class=\"model-signature-request\" >\n                    \n</div>\n<br>\n                    <div class=\"model-signature-response\"></div>\n";
   stack1 = helpers['if'].call(depth0, (depth0 != null ? depth0.responseClassSignature : depth0), {"name":"if","hash":{},"fn":this.program(9, data),"inverse":this.noop,"data":data});
   if (stack1 != null) { buffer += stack1; }
   buffer += "\n";
   stack1 = helpers['if'].call(depth0, (depth0 != null ? depth0.responseSampleJSON : depth0), {"name":"if","hash":{},"fn":this.program(11, data),"inverse":this.noop,"data":data});
   if (stack1 != null) { buffer += stack1; }
   return buffer + "        </div>\n    </div> \n</div>    \n";
-},"useData":true});
-this["Handlebars"]["templates"]["param"] = Handlebars.template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
-  var stack1, helper, functionType="function", helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression, buffer = "<td class='code'>"
-    + escapeExpression(((helper = (helper = helpers.name || (depth0 != null ? depth0.name : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"name","hash":{},"data":data}) : helper)))
-    + "</td>\n<td>\nOptional\n	\n</td>\n<td class=\"\">";
-  stack1 = ((helper = (helper = helpers.description || (depth0 != null ? depth0.description : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"description","hash":{},"data":data}) : helper));
-  if (stack1 != null) { buffer += stack1; }
-  buffer += "</td>\n<td>";
-  stack1 = ((helper = (helper = helpers.paramType || (depth0 != null ? depth0.paramType : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"paramType","hash":{},"data":data}) : helper));
-  if (stack1 != null) { buffer += stack1; }
-  return buffer + "</td>\n<td>\n	<span class=\"model-signature\"></span>\n</td>\n";
 },"useData":true});
 var HeaderView,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -690,16 +679,16 @@ HeaderView = (function(superClass) {
 
 })(Backbone.View);
 
-this["Handlebars"]["templates"]["param_list"] = Handlebars.template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
+this["Handlebars"]["templates"]["param"] = Handlebars.template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
   var stack1, helper, functionType="function", helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression, buffer = "<td class='code'>"
     + escapeExpression(((helper = (helper = helpers.name || (depth0 != null ? depth0.name : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"name","hash":{},"data":data}) : helper)))
-    + "</td>\n<td>\n    Optional\n\n</td>\n<td class=\"\">";
+    + "</td>\n<td>\nOptional\n	\n</td>\n<td class=\"\">";
   stack1 = ((helper = (helper = helpers.description || (depth0 != null ? depth0.description : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"description","hash":{},"data":data}) : helper));
   if (stack1 != null) { buffer += stack1; }
   buffer += "</td>\n<td>";
   stack1 = ((helper = (helper = helpers.paramType || (depth0 != null ? depth0.paramType : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"paramType","hash":{},"data":data}) : helper));
   if (stack1 != null) { buffer += stack1; }
-  return buffer + "</td>\n<td><span class=\"model-signature\"></span></td>";
+  return buffer + "</td>\n<td>\n	<span class=\"model-signature\"></span>\n</td>\n";
 },"useData":true});
 var MainView,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -814,16 +803,16 @@ MainView = (function(superClass) {
 
 })(Backbone.View);
 
-this["Handlebars"]["templates"]["param_readonly"] = Handlebars.template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
+this["Handlebars"]["templates"]["param_list"] = Handlebars.template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
   var stack1, helper, functionType="function", helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression, buffer = "<td class='code'>"
     + escapeExpression(((helper = (helper = helpers.name || (depth0 != null ? depth0.name : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"name","hash":{},"data":data}) : helper)))
-    + "</td>\n<td>\nOptional\n\n</td>\n<td class=\"\">";
+    + "</td>\n<td>\n    Optional\n\n</td>\n<td class=\"\">";
   stack1 = ((helper = (helper = helpers.description || (depth0 != null ? depth0.description : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"description","hash":{},"data":data}) : helper));
   if (stack1 != null) { buffer += stack1; }
   buffer += "</td>\n<td>";
   stack1 = ((helper = (helper = helpers.paramType || (depth0 != null ? depth0.paramType : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"paramType","hash":{},"data":data}) : helper));
   if (stack1 != null) { buffer += stack1; }
-  return buffer + "</td>\n<td><span class=\"model-signature\"></span></td>\n     ";
+  return buffer + "</td>\n<td><span class=\"model-signature\"></span></td>";
 },"useData":true});
 var OperationView,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -892,7 +881,7 @@ OperationView = (function(superClass) {
   };
 
   OperationView.prototype.render = function() {
-    var a, auth, auths, code, contentTypeModel, isMethodSubmissionSupported, k, key, l, len, len1, len2, len3, len4, m, modelAuths, n, o, p, param, q, ref, ref1, ref2, ref3, ref4, ref5, responseContentTypeView, responseSignatureView, schema, schemaObj, scopeIndex, signatureModel, statusCode, successResponse, type, v, value;
+    var a, auth, auths, code, contentTypeModel, isMethodSubmissionSupported, k, key, l, len, len1, len2, len3, len4, len5, m, modelAuths, n, o, p, param, q, r, ref, ref1, ref2, ref3, ref4, ref5, ref6, responseContentTypeView, responseSignatureView, schema, schemaObj, scopeIndex, signatureModel, statusCode, successResponse, type, v, value;
     isMethodSubmissionSupported = jQuery.inArray(this.model.method, this.model.supportedSubmitMethods()) >= 0;
     if (!isMethodSubmissionSupported) {
       this.model.isReadOnly = true;
@@ -999,14 +988,14 @@ OperationView = (function(superClass) {
         tagName: 'div'
       });
       $('.model-signature', $(this.el)).append(responseSignatureView.render().el);
-      responseSignatureView = new SignatureRequestView({
+      responseSignatureView = new SignatureResponseView({
         model: signatureModel,
         tagName: 'div'
       });
-      $('.model-signature-request', $(this.el)).append(responseSignatureView.render().el);
+      $('.model-signature-response', $(this.el)).append(responseSignatureView.render().el);
     } else {
       this.model.responseClassSignature = 'string';
-      $('.model-signature,.model-signature-request', $(this.el)).html(this.model.type);
+      $('.model-signature,.model-signature-response', $(this.el)).html(this.model.type);
     }
     contentTypeModel = {
       isParam: false
@@ -1044,9 +1033,14 @@ OperationView = (function(superClass) {
       param = ref4[p];
       this.addParameter(param, contentTypeModel.consumes);
     }
-    ref5 = this.model.responseMessages;
+    ref5 = this.model.parameters;
     for (q = 0, len4 = ref5.length; q < len4; q++) {
-      statusCode = ref5[q];
+      param = ref5[q];
+      this.showParameterModel(param, contentTypeModel.consumes);
+    }
+    ref6 = this.model.responseMessages;
+    for (r = 0, len5 = ref6.length; r < len5; r++) {
+      statusCode = ref6[r];
       this.addStatusCode(statusCode);
     }
     return this;
@@ -1061,27 +1055,33 @@ OperationView = (function(superClass) {
       readOnly: this.model.isReadOnly
     });
     $('.operation-params', $(this.el)).append(paramView.render().el);
-    responseSignatureView = new SignatureRequestView({
+    responseSignatureView = new SignatureResponseView({
       model: param,
       tagName: 'div'
     });
     return $('.operation-params-request', $(this.el)).append(responseSignatureView.render().el);
   };
 
-  return OperationView;
+  OperationView.prototype.showParameterModel = function(param, consumes) {
+    var paramView;
+    param.consumes = consumes;
+    paramView = new ParameterRequestView({
+      model: param,
+      readOnly: this.model.isReadOnly
+    });
+    return $('.model-signature-request', $(this.el)).append(paramView.render().el);
+  };
 
-})(Backbone.View);
-
-({
-  addStatusCode: function(statusCode) {
+  OperationView.prototype.addStatusCode = function(statusCode) {
     var statusCodeView;
     statusCodeView = new StatusCodeView({
       model: statusCode,
       tagName: 'tr'
     });
     return $('.operation-status', $(this.el)).append(statusCodeView.render().el);
-  },
-  submitOperation: function(e) {
+  };
+
+  OperationView.prototype.submitOperation = function(e) {
     var error_free, form, isFileUpload, l, len, len1, len2, m, map, n, o, opts, ref1, ref2, ref3, val;
     if (e != null) {
       e.preventDefault();
@@ -1157,11 +1157,13 @@ OperationView = (function(superClass) {
         return this.model["do"](map, opts, this.showCompleteStatus, this.showErrorStatus, this);
       }
     }
-  },
-  success: function(response, parent) {
+  };
+
+  OperationView.prototype.success = function(response, parent) {
     return parent.showCompleteStatus(response);
-  },
-  handleFileUpload: function(map, form) {
+  };
+
+  OperationView.prototype.handleFileUpload = function(map, form) {
     var bodyParam, el, headerParams, l, len, len1, len2, len3, m, n, o, obj, p, param, params, ref1, ref2, ref3, ref4;
     ref1 = form.serializeArray();
     for (l = 0, len = ref1.length; l < len; l++) {
@@ -1232,8 +1234,9 @@ OperationView = (function(superClass) {
     }
     jQuery.ajax(obj);
     return false;
-  },
-  wrap: function(data) {
+  };
+
+  OperationView.prototype.wrap = function(data) {
     var h, headerArray, headers, i, l, len, o;
     headers = {};
     headerArray = data.getAllResponseHeaders().split("\r");
@@ -1256,8 +1259,9 @@ OperationView = (function(superClass) {
     o.request.url = this.invocationUrl;
     o.status = data.status;
     return o;
-  },
-  getSelectedValue: function(select) {
+  };
+
+  OperationView.prototype.getSelectedValue = function(select) {
     var l, len, opt, options, ref1;
     if (!select.multiple) {
       return select.value;
@@ -1276,26 +1280,31 @@ OperationView = (function(superClass) {
         return null;
       }
     }
-  },
-  hideResponse: function(e) {
+  };
+
+  OperationView.prototype.hideResponse = function(e) {
     if (e != null) {
       e.preventDefault();
     }
     $(".response", $(this.el)).slideUp();
     return $(".response_hider", $(this.el)).fadeOut();
-  },
-  showResponse: function(response) {
+  };
+
+  OperationView.prototype.showResponse = function(response) {
     var prettyJson;
     prettyJson = JSON.stringify(response, null, "\t").replace(/\n/g, "<br>");
     return $(".response_body", $(this.el)).html(escape(prettyJson));
-  },
-  showErrorStatus: function(data, parent) {
+  };
+
+  OperationView.prototype.showErrorStatus = function(data, parent) {
     return parent.showStatus(data);
-  },
-  showCompleteStatus: function(data, parent) {
+  };
+
+  OperationView.prototype.showCompleteStatus = function(data, parent) {
     return parent.showStatus(data);
-  },
-  formatXml: function(xml) {
+  };
+
+  OperationView.prototype.formatXml = function(xml) {
     var contexp, fn, formatted, indent, l, lastType, len, lines, ln, pad, reg, transitions, wsexp;
     reg = /(>)(<)(\/*)/g;
     wsexp = /[ ]*(.*)[ ]+\n/g;
@@ -1366,8 +1375,9 @@ OperationView = (function(superClass) {
       fn(ln);
     }
     return formatted;
-  },
-  showStatus: function(response) {
+  };
+
+  OperationView.prototype.showStatus = function(response) {
     var code, content, contentType, e, headers, json, opts, pre, response_body, response_body_el, url;
     if (response.content === void 0) {
       content = response.data;
@@ -1427,8 +1437,9 @@ OperationView = (function(superClass) {
     } else {
       return hljs.highlightBlock(response_body_el);
     }
-  },
-  toggleOperationContent: function() {
+  };
+
+  OperationView.prototype.toggleOperationContent = function() {
     var elem;
     elem = $('#' + Docs.escapeResourceName(this.parentId + "_" + this.nickname + "_content"));
     if (elem.is(':visible')) {
@@ -1436,19 +1447,22 @@ OperationView = (function(superClass) {
     } else {
       return Docs.expandOperation(elem);
     }
-  }
-});
+  };
 
-this["Handlebars"]["templates"]["param_readonly_required"] = Handlebars.template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
-  var stack1, helper, functionType="function", helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression, buffer = "<td class='code required'>"
+  return OperationView;
+
+})(Backbone.View);
+
+this["Handlebars"]["templates"]["param_readonly"] = Handlebars.template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
+  var stack1, helper, functionType="function", helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression, buffer = "<td class='code'>"
     + escapeExpression(((helper = (helper = helpers.name || (depth0 != null ? depth0.name : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"name","hash":{},"data":data}) : helper)))
-    + "</td>\n<td>\nRequired\n\n</td>\n<td class=\"\">";
+    + "</td>\n<td>\nOptional\n\n</td>\n<td class=\"\">";
   stack1 = ((helper = (helper = helpers.description || (depth0 != null ? depth0.description : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"description","hash":{},"data":data}) : helper));
   if (stack1 != null) { buffer += stack1; }
   buffer += "</td>\n<td>";
   stack1 = ((helper = (helper = helpers.paramType || (depth0 != null ? depth0.paramType : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"paramType","hash":{},"data":data}) : helper));
   if (stack1 != null) { buffer += stack1; }
-  return buffer + "</td>\n<td><span class=\"model-signature\"></span></td>\n";
+  return buffer + "</td>\n<td><span class=\"model-signature\"></span></td>\n     ";
 },"useData":true});
 var ParameterContentTypeView,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -1476,6 +1490,107 @@ ParameterContentTypeView = (function(superClass) {
   };
 
   return ParameterContentTypeView;
+
+})(Backbone.View);
+
+this["Handlebars"]["templates"]["param_readonly_required"] = Handlebars.template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
+  var stack1, helper, functionType="function", helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression, buffer = "<td class='code required'>"
+    + escapeExpression(((helper = (helper = helpers.name || (depth0 != null ? depth0.name : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"name","hash":{},"data":data}) : helper)))
+    + "</td>\n<td>\nRequired\n\n</td>\n<td class=\"\">";
+  stack1 = ((helper = (helper = helpers.description || (depth0 != null ? depth0.description : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"description","hash":{},"data":data}) : helper));
+  if (stack1 != null) { buffer += stack1; }
+  buffer += "</td>\n<td>";
+  stack1 = ((helper = (helper = helpers.paramType || (depth0 != null ? depth0.paramType : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"paramType","hash":{},"data":data}) : helper));
+  if (stack1 != null) { buffer += stack1; }
+  return buffer + "</td>\n<td><span class=\"model-signature\"></span></td>\n";
+},"useData":true});
+var ParameterRequestView,
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
+
+ParameterRequestView = (function(superClass) {
+  extend(ParameterRequestView, superClass);
+
+  function ParameterRequestView() {
+    return ParameterRequestView.__super__.constructor.apply(this, arguments);
+  }
+
+  ParameterRequestView.prototype.initialize = function() {
+    return Handlebars.registerHelper('isArray', function(param, opts) {
+      if (param.type.toLowerCase() === 'array' || param.allowMultiple) {
+        return opts.fn(this);
+      } else {
+        return opts.inverse(this);
+      }
+    });
+  };
+
+  ParameterRequestView.prototype.render = function() {
+    var contentTypeModel, isParam, parameterContentTypeView, ref, responseContentTypeView, schema, signatureModel, signatureView, template, type;
+    type = this.model.type || this.model.dataType;
+    if (typeof type === 'undefined') {
+      schema = this.model.schema;
+      if (schema && schema['$ref']) {
+        ref = schema['$ref'];
+        if (ref.indexOf('#/definitions/') === 0) {
+          type = ref.substring('#/definitions/'.length);
+        } else {
+          type = ref;
+        }
+      }
+    }
+    this.model.type = type;
+    this.model.paramType = this.model["in"] || this.model.paramType;
+    if (this.model.paramType === 'body' || this.model["in"] === 'body') {
+      this.model.isBody = true;
+    }
+    if (type && type.toLowerCase() === 'file') {
+      this.model.isFile = true;
+    }
+    this.model["default"] = this.model["default"] || this.model.defaultValue;
+    if (this.model.allowableValues) {
+      this.model.isList = true;
+    }
+    template = this.template();
+    signatureModel = {
+      sampleJSON: this.model.sampleJSON,
+      isParam: true,
+      signature: this.model.signature
+    };
+    if (this.model.sampleJSON) {
+      $(this.el).html(template(this.model));
+      signatureView = new SignatureRequestView({
+        model: signatureModel
+      });
+      $('.model-signature2', $(this.el)).append(signatureView.render().el);
+    }
+    isParam = false;
+    if (this.model.isBody) {
+      isParam = true;
+    }
+    contentTypeModel = {
+      isParam: isParam
+    };
+    contentTypeModel.consumes = this.model.consumes;
+    if (isParam) {
+      parameterContentTypeView = new ParameterContentTypeView({
+        model: contentTypeModel
+      });
+      $('.parameter-content-type', $(this.el)).append(parameterContentTypeView.render().el);
+    } else {
+      responseContentTypeView = new ResponseContentTypeView({
+        model: contentTypeModel
+      });
+      $('.response-content-type', $(this.el)).append(responseContentTypeView.render().el);
+    }
+    return this;
+  };
+
+  ParameterRequestView.prototype.template = function() {
+    return Handlebars.templates.param_show;
+  };
+
+  return ParameterRequestView;
 
 })(Backbone.View);
 
@@ -1599,156 +1714,16 @@ ParameterView = (function(superClass) {
 
 })(Backbone.View);
 
-this["Handlebars"]["templates"]["parameter_content_type"] = Handlebars.template({"1":function(depth0,helpers,partials,data) {
-  var stack1, buffer = "";
-  stack1 = helpers.each.call(depth0, (depth0 != null ? depth0.consumes : depth0), {"name":"each","hash":{},"fn":this.program(2, data),"inverse":this.noop,"data":data});
+this["Handlebars"]["templates"]["param_show"] = Handlebars.template({"1":function(depth0,helpers,partials,data) {
+  var helper, functionType="function", helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
+  return "  <div class=\"snippet\">\n <p>Sample Request Model</p>\n    <pre><code>"
+    + escapeExpression(((helper = (helper = helpers.sampleJSON || (depth0 != null ? depth0.sampleJSON : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"sampleJSON","hash":{},"data":data}) : helper)))
+    + "</code></pre>\n    \n  </div>\n";
+},"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
+  var stack1, buffer = "\n\n	\n";
+  stack1 = helpers['if'].call(depth0, (depth0 != null ? depth0.sampleJSON : depth0), {"name":"if","hash":{},"fn":this.program(1, data),"inverse":this.noop,"data":data});
   if (stack1 != null) { buffer += stack1; }
-  return buffer;
-},"2":function(depth0,helpers,partials,data) {
-  var stack1, lambda=this.lambda, buffer = "  ";
-  stack1 = lambda(depth0, depth0);
-  if (stack1 != null) { buffer += stack1; }
-  return buffer + "\n";
-},"4":function(depth0,helpers,partials,data) {
-  return "  application/json\n";
-  },"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
-  var stack1, buffer = "<label for=\"parameterContentType\"></label>\n\n";
-  stack1 = helpers['if'].call(depth0, (depth0 != null ? depth0.consumes : depth0), {"name":"if","hash":{},"fn":this.program(1, data),"inverse":this.program(4, data),"data":data});
-  if (stack1 != null) { buffer += stack1; }
-  return buffer + "\n";
-},"useData":true});
-var ParameterView,
-  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-  hasProp = {}.hasOwnProperty;
-
-ParameterView = (function(superClass) {
-  extend(ParameterView, superClass);
-
-  function ParameterView() {
-    return ParameterView.__super__.constructor.apply(this, arguments);
-  }
-
-  ParameterView.prototype.initialize = function() {
-    return Handlebars.registerHelper('isArray', function(param, opts) {
-      if (param.type.toLowerCase() === 'array' || param.allowMultiple) {
-        return opts.fn(this);
-      } else {
-        return opts.inverse(this);
-      }
-    });
-  };
-
-  ParameterView.prototype.render = function() {
-    var contentTypeModel, isParam, parameterContentTypeView, ref, responseContentTypeView, schema, signatureModel, signatureView, template, type;
-    type = this.model.type || this.model.dataType;
-    if (typeof type === 'undefined') {
-      schema = this.model.schema;
-      if (schema && schema['$ref']) {
-        ref = schema['$ref'];
-        if (ref.indexOf('#/definitions/') === 0) {
-          type = ref.substring('#/definitions/'.length);
-        } else {
-          type = ref;
-        }
-      }
-    }
-    this.model.type = type;
-    this.model.paramType = this.model["in"] || this.model.paramType;
-    if (this.model.paramType === 'body' || this.model["in"] === 'body') {
-      this.model.isBody = true;
-    }
-    if (type && type.toLowerCase() === 'file') {
-      this.model.isFile = true;
-    }
-    this.model["default"] = this.model["default"] || this.model.defaultValue;
-    if (this.model.allowableValues) {
-      this.model.isList = true;
-    }
-    template = this.template();
-    $(this.el).html(template(this.model));
-    signatureModel = {
-      sampleJSON: this.model.sampleJSON,
-      isParam: true,
-      signature: this.model.signature
-    };
-    if (this.model.sampleJSON) {
-      signatureView = new SignatureView({
-        model: signatureModel,
-        tagName: 'div'
-      });
-      $('.model-signature', $(this.el)).append(signatureView.render().el);
-    } else {
-      $('.model-signature', $(this.el)).html(this.model.signature);
-    }
-    isParam = false;
-    if (this.model.isBody) {
-      isParam = true;
-    }
-    contentTypeModel = {
-      isParam: isParam
-    };
-    contentTypeModel.consumes = this.model.consumes;
-    if (isParam) {
-      parameterContentTypeView = new ParameterContentTypeView({
-        model: contentTypeModel
-      });
-      $('.parameter-content-type', $(this.el)).append(parameterContentTypeView.render().el);
-    } else {
-      responseContentTypeView = new ResponseContentTypeView({
-        model: contentTypeModel
-      });
-      $('.response-content-type', $(this.el)).append(responseContentTypeView.render().el);
-    }
-    return this;
-  };
-
-  ParameterView.prototype.template = function() {
-    if (this.model.isList) {
-      return Handlebars.templates.param_list;
-    } else {
-      if (this.options.readOnly) {
-        if (this.model.required) {
-          return Handlebars.templates.param_readonly_required;
-        } else {
-          return Handlebars.templates.param_readonly;
-        }
-      } else {
-        if (this.model.required) {
-          return Handlebars.templates.param_required;
-        } else {
-          return Handlebars.templates.param;
-        }
-      }
-    }
-  };
-
-  return ParameterView;
-
-})(Backbone.View);
-
-this["Handlebars"]["templates"]["resource"] = Handlebars.template({"1":function(depth0,helpers,partials,data) {
-  return "  ";
-  },"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
-  var stack1, helper, options, functionType="function", helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression, blockHelperMissing=helpers.blockHelperMissing, buffer = "<h1>"
-    + escapeExpression(((helper = (helper = helpers.id || (depth0 != null ? depth0.id : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"id","hash":{},"data":data}) : helper)))
-    + " API Docs</h1>\n<br>\n<div id=\""
-    + escapeExpression(((helper = (helper = helpers.id || (depth0 != null ? depth0.id : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"id","hash":{},"data":data}) : helper)))
-    + "_api_desc\" class=\"row-fluid\"><script>$.get('apidocs/static/"
-    + escapeExpression(((helper = (helper = helpers.id || (depth0 != null ? depth0.id : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"id","hash":{},"data":data}) : helper)))
-    + ".html',function(data){$('#"
-    + escapeExpression(((helper = (helper = helpers.id || (depth0 != null ? depth0.id : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"id","hash":{},"data":data}) : helper)))
-    + "_api_desc').html(data);$(document).trigger('loaded-static');});</script></div>\n\n<br>\n <h2>\n   \n   ";
-  stack1 = ((helper = (helper = helpers.summary || (depth0 != null ? depth0.summary : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"summary","hash":{},"data":data}) : helper));
-  if (stack1 != null) { buffer += stack1; }
-  buffer += "\n  </h2> \n\n \n    <p>";
-  stack1 = ((helper = (helper = helpers.summary || (depth0 != null ? depth0.summary : depth0)) != null ? helper : helperMissing),(options={"name":"summary","hash":{},"fn":this.program(1, data),"inverse":this.noop,"data":data}),(typeof helper === functionType ? helper.call(depth0, options) : helper));
-  if (!helpers.summary) { stack1 = blockHelperMissing.call(depth0, stack1, options); }
-  if (stack1 != null) { buffer += stack1; }
-  stack1 = ((helper = (helper = helpers.summary || (depth0 != null ? depth0.summary : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"summary","hash":{},"data":data}) : helper));
-  if (stack1 != null) { buffer += stack1; }
-  return buffer + "</p>\n  \n\n \n<ul class='endpoints row-fluid' id='"
-    + escapeExpression(((helper = (helper = helpers.id || (depth0 != null ? depth0.id : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"id","hash":{},"data":data}) : helper)))
-    + "_endpoint_list'>\n  \n</ul>    \n";
+  return buffer + "\n\n\n";
 },"useData":true});
 var ResourceView,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -1821,21 +1796,21 @@ ResourceView = (function(superClass) {
 
 })(Backbone.View);
 
-this["Handlebars"]["templates"]["response_content_type"] = Handlebars.template({"1":function(depth0,helpers,partials,data) {
+this["Handlebars"]["templates"]["parameter_content_type"] = Handlebars.template({"1":function(depth0,helpers,partials,data) {
   var stack1, buffer = "";
-  stack1 = helpers.each.call(depth0, (depth0 != null ? depth0.produces : depth0), {"name":"each","hash":{},"fn":this.program(2, data),"inverse":this.noop,"data":data});
+  stack1 = helpers.each.call(depth0, (depth0 != null ? depth0.consumes : depth0), {"name":"each","hash":{},"fn":this.program(2, data),"inverse":this.noop,"data":data});
   if (stack1 != null) { buffer += stack1; }
   return buffer;
 },"2":function(depth0,helpers,partials,data) {
-  var stack1, lambda=this.lambda, buffer = "    ";
+  var stack1, lambda=this.lambda, buffer = "  ";
   stack1 = lambda(depth0, depth0);
   if (stack1 != null) { buffer += stack1; }
   return buffer + "\n";
 },"4":function(depth0,helpers,partials,data) {
-  return " application/json\n";
+  return "  application/json\n";
   },"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
-  var stack1, buffer = "<label for=\"responseContentType\"></label>\n\n";
-  stack1 = helpers['if'].call(depth0, (depth0 != null ? depth0.produces : depth0), {"name":"if","hash":{},"fn":this.program(1, data),"inverse":this.program(4, data),"data":data});
+  var stack1, buffer = "<label for=\"parameterContentType\"></label>\n\n";
+  stack1 = helpers['if'].call(depth0, (depth0 != null ? depth0.consumes : depth0), {"name":"if","hash":{},"fn":this.program(1, data),"inverse":this.program(4, data),"data":data});
   if (stack1 != null) { buffer += stack1; }
   return buffer + "\n";
 },"useData":true});
@@ -1868,31 +1843,29 @@ ResponseContentTypeView = (function(superClass) {
 
 })(Backbone.View);
 
-this["Handlebars"]["templates"]["signature"] = Handlebars.template({"1":function(depth0,helpers,partials,data) {
-  var stack1, buffer = "";
-  stack1 = helpers.each.call(depth0, (depth0 != null ? depth0.consumes : depth0), {"name":"each","hash":{},"fn":this.program(2, data),"inverse":this.noop,"data":data});
+this["Handlebars"]["templates"]["resource"] = Handlebars.template({"1":function(depth0,helpers,partials,data) {
+  return "  ";
+  },"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
+  var stack1, helper, options, functionType="function", helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression, blockHelperMissing=helpers.blockHelperMissing, buffer = "<h1>"
+    + escapeExpression(((helper = (helper = helpers.id || (depth0 != null ? depth0.id : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"id","hash":{},"data":data}) : helper)))
+    + " API Docs</h1>\n<br>\n<div id=\""
+    + escapeExpression(((helper = (helper = helpers.id || (depth0 != null ? depth0.id : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"id","hash":{},"data":data}) : helper)))
+    + "_api_desc\" class=\"row-fluid\"><script>$.get('apidocs/static/"
+    + escapeExpression(((helper = (helper = helpers.id || (depth0 != null ? depth0.id : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"id","hash":{},"data":data}) : helper)))
+    + ".html',function(data){$('#"
+    + escapeExpression(((helper = (helper = helpers.id || (depth0 != null ? depth0.id : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"id","hash":{},"data":data}) : helper)))
+    + "_api_desc').html(data);$(document).trigger('loaded-static');});</script></div>\n\n<br>\n <h2>\n   \n   ";
+  stack1 = ((helper = (helper = helpers.summary || (depth0 != null ? depth0.summary : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"summary","hash":{},"data":data}) : helper));
   if (stack1 != null) { buffer += stack1; }
-  return buffer;
-},"2":function(depth0,helpers,partials,data) {
-  var stack1, lambda=this.lambda, buffer = "    ";
-  stack1 = lambda(depth0, depth0);
+  buffer += "\n  </h2> \n\n \n    <p>";
+  stack1 = ((helper = (helper = helpers.summary || (depth0 != null ? depth0.summary : depth0)) != null ? helper : helperMissing),(options={"name":"summary","hash":{},"fn":this.program(1, data),"inverse":this.noop,"data":data}),(typeof helper === functionType ? helper.call(depth0, options) : helper));
+  if (!helpers.summary) { stack1 = blockHelperMissing.call(depth0, stack1, options); }
   if (stack1 != null) { buffer += stack1; }
-  return buffer + "\n";
-},"4":function(depth0,helpers,partials,data) {
-  return "  application/json\n";
-  },"6":function(depth0,helpers,partials,data) {
-  var helper, functionType="function", helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
-  return "  <div class=\"snippet span4\">\n    <pre class=\"span4\"><code>"
-    + escapeExpression(((helper = (helper = helpers.sampleJSON || (depth0 != null ? depth0.sampleJSON : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"sampleJSON","hash":{},"data":data}) : helper)))
-    + "</code></pre>\n    \n  </div>\n";
-},"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
-  var stack1, buffer = "<div>\n";
-  stack1 = helpers['if'].call(depth0, (depth0 != null ? depth0.consumes : depth0), {"name":"if","hash":{},"fn":this.program(1, data),"inverse":this.program(4, data),"data":data});
+  stack1 = ((helper = (helper = helpers.summary || (depth0 != null ? depth0.summary : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"summary","hash":{},"data":data}) : helper));
   if (stack1 != null) { buffer += stack1; }
-  buffer += "<!--<div class=\"signature-container\">\n \n";
-  stack1 = helpers['if'].call(depth0, (depth0 != null ? depth0.sampleJSON : depth0), {"name":"if","hash":{},"fn":this.program(6, data),"inverse":this.noop,"data":data});
-  if (stack1 != null) { buffer += stack1; }
-  return buffer + "</div>-->\n\n";
+  return buffer + "</p>\n  \n\n \n<ul class='endpoints row-fluid' id='"
+    + escapeExpression(((helper = (helper = helpers.id || (depth0 != null ? depth0.id : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"id","hash":{},"data":data}) : helper)))
+    + "_endpoint_list'>\n  \n</ul>    \n";
 },"useData":true});
 var SignatureRequestView,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -1966,16 +1939,121 @@ SignatureRequestView = (function(superClass) {
 
 })(Backbone.View);
 
-this["Handlebars"]["templates"]["signature_request"] = Handlebars.template({"1":function(depth0,helpers,partials,data) {
-  var helper, functionType="function", helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
-  return "  <div class=\"snippet\">\r\n <p>Sample Request Model</p>\r\n    <pre><code>"
-    + escapeExpression(((helper = (helper = helpers.sampleJSON || (depth0 != null ? depth0.sampleJSON : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"sampleJSON","hash":{},"data":data}) : helper)))
-    + "</code></pre>\r\n    \r\n  </div>\r\n";
-},"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
-  var stack1, buffer = "<div class=\"signature-container\">\r\n \r\n";
-  stack1 = helpers['if'].call(depth0, (depth0 != null ? depth0.sampleJSON : depth0), {"name":"if","hash":{},"fn":this.program(1, data),"inverse":this.noop,"data":data});
+this["Handlebars"]["templates"]["response_content_type"] = Handlebars.template({"1":function(depth0,helpers,partials,data) {
+  var stack1, buffer = "";
+  stack1 = helpers.each.call(depth0, (depth0 != null ? depth0.produces : depth0), {"name":"each","hash":{},"fn":this.program(2, data),"inverse":this.noop,"data":data});
   if (stack1 != null) { buffer += stack1; }
-  return buffer + "</div>";
+  return buffer;
+},"2":function(depth0,helpers,partials,data) {
+  var stack1, lambda=this.lambda, buffer = "    ";
+  stack1 = lambda(depth0, depth0);
+  if (stack1 != null) { buffer += stack1; }
+  return buffer + "\n";
+},"4":function(depth0,helpers,partials,data) {
+  return " application/json\n";
+  },"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
+  var stack1, buffer = "<label for=\"responseContentType\"></label>\n\n";
+  stack1 = helpers['if'].call(depth0, (depth0 != null ? depth0.produces : depth0), {"name":"if","hash":{},"fn":this.program(1, data),"inverse":this.program(4, data),"data":data});
+  if (stack1 != null) { buffer += stack1; }
+  return buffer + "\n";
+},"useData":true});
+var SignatureResponseView,
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
+
+SignatureResponseView = (function(superClass) {
+  extend(SignatureResponseView, superClass);
+
+  function SignatureResponseView() {
+    return SignatureResponseView.__super__.constructor.apply(this, arguments);
+  }
+
+  SignatureResponseView.prototype.events = {
+    'click a.description-link': 'switchToDescription',
+    'click a.snippet-link': 'switchToSnippet',
+    'mousedown .snippet': 'snippetToTextArea'
+  };
+
+  SignatureResponseView.prototype.initialize = function() {};
+
+  SignatureResponseView.prototype.render = function() {
+    var template;
+    template = this.template();
+    $(this.el).html(template(this.model));
+    this.switchToSnippet();
+    this.isParam = this.model.isParam;
+    if (this.isParam) {
+      $('.notice', $(this.el)).text('Click to set as parameter value');
+    }
+    return this;
+  };
+
+  SignatureResponseView.prototype.template = function() {
+    return Handlebars.templates.signature_response;
+  };
+
+  SignatureResponseView.prototype.switchToDescription = function(e) {
+    if (e != null) {
+      e.preventDefault();
+    }
+    $(".snippet", $(this.el)).hide();
+    $(".description", $(this.el)).show();
+    $('.description-link', $(this.el)).addClass('selected');
+    return $('.snippet-link', $(this.el)).removeClass('selected');
+  };
+
+  SignatureResponseView.prototype.switchToSnippet = function(e) {
+    if (e != null) {
+      e.preventDefault();
+    }
+    $(".description", $(this.el)).hide();
+    $(".snippet", $(this.el)).show();
+    $('.snippet-link', $(this.el)).addClass('selected');
+    return $('.description-link', $(this.el)).removeClass('selected');
+  };
+
+  SignatureResponseView.prototype.snippetToTextArea = function(e) {
+    var textArea;
+    if (this.isParam) {
+      if (e != null) {
+        e.preventDefault();
+      }
+      textArea = $('textarea', $(this.el.parentNode.parentNode.parentNode));
+      if ($.trim(textArea.val()) === '') {
+        return textArea.val(this.model.sampleJSON);
+      }
+    }
+  };
+
+  return SignatureResponseView;
+
+})(Backbone.View);
+
+this["Handlebars"]["templates"]["signature"] = Handlebars.template({"1":function(depth0,helpers,partials,data) {
+  var stack1, buffer = "";
+  stack1 = helpers.each.call(depth0, (depth0 != null ? depth0.consumes : depth0), {"name":"each","hash":{},"fn":this.program(2, data),"inverse":this.noop,"data":data});
+  if (stack1 != null) { buffer += stack1; }
+  return buffer;
+},"2":function(depth0,helpers,partials,data) {
+  var stack1, lambda=this.lambda, buffer = "    ";
+  stack1 = lambda(depth0, depth0);
+  if (stack1 != null) { buffer += stack1; }
+  return buffer + "\n";
+},"4":function(depth0,helpers,partials,data) {
+  return "  application/json\n";
+  },"6":function(depth0,helpers,partials,data) {
+  var helper, functionType="function", helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
+  return "  <div class=\"snippet span4\">\n    <pre class=\"span4\"><code>"
+    + escapeExpression(((helper = (helper = helpers.sampleJSON || (depth0 != null ? depth0.sampleJSON : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"sampleJSON","hash":{},"data":data}) : helper)))
+    + "</code></pre>\n    \n  </div>\n";
+},"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
+  var stack1, buffer = "<div>\n";
+  stack1 = helpers['if'].call(depth0, (depth0 != null ? depth0.consumes : depth0), {"name":"if","hash":{},"fn":this.program(1, data),"inverse":this.program(4, data),"data":data});
+  if (stack1 != null) { buffer += stack1; }
+  buffer += "<!--<div class=\"signature-container\">\n \n";
+  stack1 = helpers['if'].call(depth0, (depth0 != null ? depth0.sampleJSON : depth0), {"name":"if","hash":{},"fn":this.program(6, data),"inverse":this.noop,"data":data});
+  if (stack1 != null) { buffer += stack1; }
+  return buffer + "</div>-->\n\n";
 },"useData":true});
 var SignatureView,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -2049,13 +2127,16 @@ SignatureView = (function(superClass) {
 
 })(Backbone.View);
 
-this["Handlebars"]["templates"]["status_code"] = Handlebars.template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
-  var stack1, helper, functionType="function", helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression, buffer = "<td width='15%' class='code'>"
-    + escapeExpression(((helper = (helper = helpers.code || (depth0 != null ? depth0.code : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"code","hash":{},"data":data}) : helper)))
-    + "</td>\n<td>";
-  stack1 = ((helper = (helper = helpers.message || (depth0 != null ? depth0.message : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"message","hash":{},"data":data}) : helper));
+this["Handlebars"]["templates"]["signature_request"] = Handlebars.template({"1":function(depth0,helpers,partials,data) {
+  var helper, functionType="function", helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
+  return "  <div class=\"snippet\">\r\n <p>Sample Request Model</p>\r\n    <pre><code>"
+    + escapeExpression(((helper = (helper = helpers.sampleJSON || (depth0 != null ? depth0.sampleJSON : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"sampleJSON","hash":{},"data":data}) : helper)))
+    + "</code></pre>\r\n    \r\n  </div>\r\n";
+},"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
+  var stack1, buffer = "\r\n \r\n";
+  stack1 = helpers['if'].call(depth0, (depth0 != null ? depth0.sampleJSON : depth0), {"name":"if","hash":{},"fn":this.program(1, data),"inverse":this.noop,"data":data});
   if (stack1 != null) { buffer += stack1; }
-  return buffer + "</td>\n<td width='50%'><span class=\"model-signature\" /></td>";
+  return buffer;
 },"useData":true});
 var StatusCodeView,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -2071,23 +2152,9 @@ StatusCodeView = (function(superClass) {
   StatusCodeView.prototype.initialize = function() {};
 
   StatusCodeView.prototype.render = function() {
-    var responseModel, responseModelView, template;
+    var template;
     template = this.template();
     $(this.el).html(template(this.model));
-    if (swaggerUi.api.models.hasOwnProperty(this.model.responseModel)) {
-      responseModel = {
-        sampleJSON: JSON.stringify(swaggerUi.api.models[this.model.responseModel].createJSONSample(), null, 2),
-        isParam: false,
-        signature: swaggerUi.api.models[this.model.responseModel].getMockSignature()
-      };
-      responseModelView = new SignatureView({
-        model: responseModel,
-        tagName: 'div'
-      });
-      $('.model-signature', this.$el).append(responseModelView.render().el);
-    } else {
-      $('.model-signature', this.$el).html('');
-    }
     return this;
   };
 
@@ -2098,3 +2165,23 @@ StatusCodeView = (function(superClass) {
   return StatusCodeView;
 
 })(Backbone.View);
+
+this["Handlebars"]["templates"]["signature_response"] = Handlebars.template({"1":function(depth0,helpers,partials,data) {
+  var helper, functionType="function", helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
+  return "  <div class=\"snippet\">\r\n <p>Sample Response Model</p>\r\n    <pre><code>"
+    + escapeExpression(((helper = (helper = helpers.sampleJSON || (depth0 != null ? depth0.sampleJSON : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"sampleJSON","hash":{},"data":data}) : helper)))
+    + "</code></pre>\r\n    \r\n  </div>\r\n";
+},"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
+  var stack1, buffer = "<div class=\"signature-container\">\r\n \r\n";
+  stack1 = helpers['if'].call(depth0, (depth0 != null ? depth0.sampleJSON : depth0), {"name":"if","hash":{},"fn":this.program(1, data),"inverse":this.noop,"data":data});
+  if (stack1 != null) { buffer += stack1; }
+  return buffer + "</div>";
+},"useData":true});
+this["Handlebars"]["templates"]["status_code"] = Handlebars.template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
+  var stack1, helper, functionType="function", helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression, buffer = "<td width='15%' class='code'>"
+    + escapeExpression(((helper = (helper = helpers.code || (depth0 != null ? depth0.code : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"code","hash":{},"data":data}) : helper)))
+    + "</td>\n<td>";
+  stack1 = ((helper = (helper = helpers.message || (depth0 != null ? depth0.message : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"message","hash":{},"data":data}) : helper));
+  if (stack1 != null) { buffer += stack1; }
+  return buffer + "</td>\n<td width='50%'><span class=\"model-signature\" /></td>";
+},"useData":true});

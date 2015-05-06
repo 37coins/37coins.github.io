@@ -1,13 +1,13 @@
 {
-  "swaggerVersion" : "1.2",
+  "swaggerVersion" : "12",
   "apiVersion" : "1",
- "basePath":"/apidocs/",
+ "basePath":"/37coins.github.io/apidocs/",
   "apis" : [ {
-    "path" : "chains.{format}",
+    "path" : "swagger.{format}",
    
     "description": "HD wallet explorer"
   },{
-    "path" : "oracle.{format}",
+    "path" : "petstore.{format}",
    
     "description": "Signing Oracle"
   } ]

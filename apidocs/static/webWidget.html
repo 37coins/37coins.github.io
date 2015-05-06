@@ -25,8 +25,7 @@
             <li>
                 <br> 
                 <a href="http://37coins.com/">The widget file</a> 
-                <br> <pre> <code>
-&lt;script src="http://<the prod server>/widget/widget37coinsSignup.js">&lt;/script&gt;
+                <br> <pre><code>&lt;script src="http://&lt;the prod server&gt;/widget/widget37coinsSignup.js">&lt;/script&gt;
                 </code></pre>
             </li>
         </ul>
@@ -38,27 +37,19 @@
         <h4>HTML</h4>
         Create a div element with a unique id or class
         <br>
-        <pre>
-        <code>
-&lt;div id="widget-container"&gt;&lt;/div&gt;
-        </code>
-        </pre>
+        <pre><code>&lt;div id="widget-container"&gt;&lt;/div&gt;</code></pre>
         <br/>
         <br/>
 
         <h4>
             Javascript
         </h4>
-        <pre>
-        <code>
-//Executes your code when the DOM is ready.  Acts the same as $(document).ready().
+        <pre><code>//Executes your code when the DOM is ready.  Acts the same as $(document).ready().
 $(function() {
     $('#widget-container').widget37coinsSignup({
     //options go here
     });
-});
-        </code>
-        </pre>
+});</code></pre>
         <br/><br/>
 
         <h2>Options</h2>
