@@ -36,7 +36,7 @@
 .swagger-section pre .tex .special,
 .swagger-section pre .erlang_repl .function_or_atom,
 .swagger-section pre .markdown .header {
-  color: #800;
+  color: white;
 }
 .swagger-section pre .comment,
 .swagger-section pre .annotation,
