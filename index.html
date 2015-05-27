@@ -48,10 +48,11 @@
                     $("#static").html(data);
                     // alert( "Load was performed." );
                 });
-                $.get("apidocs/static/webWidget.html", function(data) {
-                    $("#web-widget").html(data);
-                    // alert( "Load was performed." );
-                });        
+                //for production this is not in production yet.
+//                $.get("apidocs/static/webWidget.html", function(data) {
+//                    $("#web-widget").html(data);
+//                    // alert( "Load was performed." );
+//                });        
                 var url = window.location.search.match(/url=([^&]+)/);
                 if (url && url.length > 1) {
                     url = decodeURIComponent(url[1]);
