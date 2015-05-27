@@ -3,7 +3,8 @@
     <head>
         <meta charset="utf-8">
         <title>37coins.io API Documentation</title>
-
+        <link rel="icon" type="image/png" href="../images/favicon16.gif">
+        <link rel="shortcut icon" href="../images/faveicon32.png">
         <link href='../css/typography.css' media='screen' rel='stylesheet' type='text/css'/>
         <link href='../css/reset.css' media='screen' rel='stylesheet' type='text/css'/>
         <link href='../css/screen.css' media='screen' rel='stylesheet' type='text/css'/>
@@ -21,11 +22,16 @@
         <script src='../swagger-ui.js' type='text/javascript'></script>
         <script src='../lib/highlight.7.3.pack.js' type='text/javascript'></script>
         <script src='../lib/marked.js' type='text/javascript'></script>
-
+<script src="http://localhost:9000/widget/widget37coinsSignup.js"></script>
 
         <!-- enabling this will enable oauth2 implicit scope support -->
         <script src='../lib/swagger-oauth.js' type='text/javascript'></script>
       <script type="text/javascript">
+          $(function() {
+    $('#widget-container').widget37coinsSignup({
+    //options go here
+    });
+});
             $(function() {
                 var urlLoaderCounterSuccess = 0;
                 var urlLoaderCounterFailed = 0;
@@ -39,14 +45,15 @@
                             highlightOnScroll: true,
                             extendPageOffset: 300,
                             showAndHide: false, //this is needed for toggleling the dropdown on sigle click
+                            highlightOffset:100
                             // showEffect:"none",
                             // showAndHideOnScroll : false
                         };
-        $.get("apidocs/static/static.html", function(data) {
+                $.get("../apidocs/static/static.html", function(data) {
                     $("#static").html(data);
                     // alert( "Load was performed." );
                 });
-                $.get("apidocs/static/webWidget.html", function(data) {
+                $.get("../apidocs/static/webWidget.html", function(data) {
                     $("#web-widget").html(data);
                     // alert( "Load was performed." );
                 });        
@@ -93,27 +100,25 @@
                         }).load();
                     }
                 }
-                window.resourceCounter = 1;
+                window.resourceCounter = 0;
                 $(document).on('loaded-static', function() {
-                    console.log(window.resourceCounter ," : ", $('.resource').length);
-                    if (window.resourceCounter >= urlLoaderCounterSuccess && window.resourceCounter >= $('.resource').length) {
-                        console.log('triggered');
-                        staticLoaded = true;
-                        
-                        // $('.tocify-header .tocify-item').on('click',function(){$(this).next('.tocify-subheader').toggle();});
-                    }
-                    window.resourceCounter++;
+                    window.resourceCounter++;  /// staticLoaded = true;
                 });
                 var timer = setInterval(function(){
                     var urlLoadFinished = false;
                     if((urlLoaderCounterSuccess + urlLoaderCounterFailed) == url.length){
                         urlLoadFinished = true;
+                         if (window.resourceCounter >= urlLoaderCounterSuccess) {
+                             setTimeout(function(){  
+                                staticLoaded = true;
+                            },500); 
+                         }
                     }
-                    if(urlLoaderCounterFailed == url.length){
+                    if(urlLoaderCounterFailed == url.length ){
                         staticLoaded = true;
                     }
                     if(urlLoadFinished && staticLoaded){
-                        toc = $(toc_container).tocify(toc_option).data("toc-tocify");
+                        toc = $(toc_container).empty().tocify(toc_option).data("toc-tocify");
                         prettyPrint();
                         $(".optionName").popover({trigger: "hover"});
                         clearInterval(timer);
@@ -168,14 +173,7 @@
         <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
         <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">
         <link href="../styles/style.css" type="text/css" rel="stylesheet" />
-        <script src="http://localhost:9000/widget/widget37coinsSignup.js"></script>
-        <script>
-            $(function() {
-    $('#widget').widget37coinsSignup({
-    //options go here
-    });
-});
-        </script>
+
     </head>
 
     <body class="swagger-section">
@@ -189,9 +187,9 @@
         <div class="container-fluid">
             <div class="row-fluid">
                 <div class="span2">
-                     <div id="widget">
-                    </div><!--/.well -->
+                    <div id="widget-container"></div>
                     <div id="toc">
+                        <img style="margin-left: 40%; margin-top: 30%;" src="../images/loop.gif">
                     </div><!--/.well -->
                 </div><!--/span-->
                 <div class="dark-box" style="">
