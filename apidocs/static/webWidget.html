@@ -3,16 +3,18 @@
 
     <div class="span7 documentationBox">
         <p>
+            Currently we have online registration for our SMS WALLET based on our <a href="https://37coins.com">WEBSITE</a>. People generally go to the signup page, put their phone number and on form submission they go to the website ACCOUNT page, where some server operations are done to get registered that phone number and the feedback of those operations are shown on that page whether the registration is done successfully or this is an unsuccessful operation and why.
+ 37coins SMS WALLET signup web widget provides signup to 37coins free SMS WALLET from other websites. 
+        </p><br/>
+<h2>Goal</h2>
+We want to distribute this signup process to our SMS WALLET by offering free web widget for integration to other websites. This web widget can be integrated into other websites, social media etc where users can sign up there but they do not need to go to our website. This way much more people will get chance to use our SMS WALLET service. 
 
-
-            37coins SMS wallet signup web widget provides signup to 37coins free sms wallet from other websites. 
+           
             <br/><br/>
-        <h2>Description</h2>
-        <p>
-            The sms wallet signup widget provides web sites the power for users to signup to 37coins wallet from other websites. 
-        </p>
+        
         <br/>
         <h2>Requirements</h2>
+        <p>This is a jquery widget, need to include jquery if not present in the website.</p>
         <ul>
             <li>
                 <a href="http://jquery.com/">jQuery 1.7.2+</a> (It is always recommended to use the latest version of jQuery)
@@ -24,7 +26,7 @@
 
             <li>
                 <br> 
-                <a href="http://37coins.com/">The widget file</a> 
+                The widget javascript<a href="http://&lt;the prod server&gt;/widget/widget37coinsSignup.js"> FILE </a> itself.
                 <br> <pre><code>&lt;script src="http://&lt;the prod server&gt;/widget/widget37coinsSignup.js">&lt;/script&gt;
                 </code></pre>
             </li>
@@ -35,15 +37,15 @@
         The widget can be initialized with a single call to a Javascript function
         <br/>
         <h4>HTML</h4>
-        Create a div element with a unique id or class
+        Create a div element with a unique id or class(The container which will hold the widget eg. "widget-container")
         <br>
         <pre><code>&lt;div id="widget-container"&gt;&lt;/div&gt;</code></pre>
-        <br/>
-        <br/>
+        
 
         <h4>
             Javascript
         </h4>
+        <p>Call the plugin: In your JavaScript code, call the widget37coinsSignup() method on your HTML div.</p>
         <pre><code>//Executes your code when the DOM is ready.  Acts the same as $(document).ready().
 $(function() {
     $('#widget-container').widget37coinsSignup({
