@@ -23,7 +23,8 @@ and open the template in the editor.
                 padding-left: 10px;
                 font-size: 14px;
             }
-            h1,h2{
+            /*temporary removed h2 from here, to get back remove div, add h2*/
+            h1, div.heading2{
                 border-bottom: 1px solid #ccc;
             }
             h1{
